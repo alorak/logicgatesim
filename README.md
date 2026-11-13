@@ -1,14 +1,12 @@
 # Mantık Laboratuvarı
 
-Tarayıcıda çalışan, dokunmatik ekran destekli mantık devresi simülatörü.
+Tablet ve masaüstü tarayıcılarında çalışan, sürükle-bırak mantık devresi oyunu.
 
-- Anahtar, lamba, AND, OR, NOT ve XOR parçalarını ekle; sürükleyerek taşı.
-- Giriş ve çıkış uçlarını dokunarak veya sürükleyerek bağla; sürüklerken hedef uç vurgulanır ve kablo hedefe hizalanır. Anahtarlara dokunarak sinyali izle.
-- Parçaya veya kabloya dokununca çalışma alanının sol altında seçim paneli açılır; **Sil** düğmesi buradadır.
-- Lamba seçim panelindeki açılır menüden 💡 veya kategorilere ayrılmış 76 hayvan emojisi seçilebilir; emoji 0/1 durumuna göre aydınlanır veya soluklaşır.
-- Çalışma alanının içinde yakınlaştırma, uzaklaştırma ve simgeyle **sığdırma** kontrolleri bulunur.
-- Üstte geri al, ileri al ve temizle düğmeleri yalnızca ikonlarla gösterilir.
-- Sağdaki **Doğruluk Tablosu** panelinde 0/1 kombinasyonları, lambaların ifadeleri ve simge tabanlı istatistikler görünür.
-- **Örnek devre** ile yarım toplayıcıyı dene.
+- **Parçalar:** Anahtar, lamba, AND, OR, NAND, XOR ve NOT.
+- **Kablolar:** Bağlantı uçlarına dokunarak veya aralarında sürükleyerek bağla; hedef uç vurgulanır.
+- **Yiyecekli anahtarlar:** Her anahtar için seçim panelinden yiyecek belirle. Kapalıyken boş tabak ve **0**, açıkken seçilen yiyecek ve **1** gösterilir.
+- **Hayvanlı lambalar:** Her lambaya açılır menüden hayvan emojisi ata; sinyale göre hayvan aydınlanır veya solar.
+- **Mantık Hikâyesi:** Sağ panelde her lamba için bağlantı ifadesi, anlık durumu ve AND/OR/NAND/XOR/NOT kapılarının yiyeceklerle anlatımı görünür. Eski doğruluk tablosu kaldırıldı.
+- **Kullanım:** Seçili parçayı alt panelden sil, çalışma alanını yakınlaştır/kaydır, örnek devreyi kur, geri/ileri al.
 
-Kurulum gerekmez: `index.html` dosyasını tarayıcıda aç veya GitHub Pages ile yayımla. Devre, seçilen lamba emojileriyle birlikte tarayıcıda yerel olarak kaydedilir. Doğruluk tablosu en fazla 6 anahtarlı kombinasyonlar için üretilir.
+Kurulum gerekmez: `index.html` dosyasını doğrudan aç veya GitHub Pages ile yayımla. Devre ve emoji seçimleri tarayıcının yerel depolamasında saklanır. Mantık hesapları 0/1 değerleriyle yapılmaya devam eder.

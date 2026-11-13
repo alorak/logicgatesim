@@ -157,7 +157,7 @@
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script>
 (()=>{'use strict';
-const W=2100,H=1600,NW=146,NH=95, STORAGE_KEY='mantik-laboratuvari-v1';
+const W=2100,H=1600,NW=146,NH=95, WORLD_LIMIT=100000, STORAGE_KEY='mantik-laboratuvari-v1';
 const TYPE_NAMES={switch:'Anahtar',lamp:'Lamba',and:'AND',or:'OR',nand:'NAND',not:'NOT',xor:'XOR'};
 const INPUTS={switch:0,lamp:1,and:2,or:2,nand:2,not:1,xor:2};
 // Native dropdowns work well with touch, mouse and keyboard; options need no image assets.
@@ -196,10 +196,13 @@ let nodes=[],edges=[],nextId=1,selection=null,pending=null,draggingWire=null,pan
 let computed={},wirePreview=null,toastTimer=0,interaction=null,pinch=null;
 const svgNS='http://www.w3.org/2000/svg';
 function clamp(x,a,b){return Math.max(a,Math.min(b,x));}
+// A viewport can be panned or zoomed away from the virtual board's (0,0).
+// Do not pin components to that invisible world origin; allow negative coordinates.
+function clampWorld(x){return clamp(x,-WORLD_LIMIT,WORLD_LIMIT);}
 function snapshot(){return JSON.stringify({nodes,edges,nextId});}
 function persist(){try{localStorage.setItem(STORAGE_KEY,snapshot());}catch(e){}}
 function remember(){undoStack.push(snapshot());if(undoStack.length>50)undoStack.shift();redoStack=[];updateHistoryButtons();}
-function restore(text){try{const s=JSON.parse(text);if(!Array.isArray(s.nodes)||!Array.isArray(s.edges))return false;nodes=s.nodes.filter(n=>TYPE_NAMES[n.type]&&Number.isFinite(n.x)&&Number.isFinite(n.y)).map(n=>({...n,x:clamp(n.x,10,W-NW-10),y:clamp(n.y,10,H-NH-10),emoji:n.type==='lamp'&&ANIMAL_EMOJIS.includes(n.emoji)?n.emoji:'',food:n.type==='switch'&&FOOD_EMOJIS.includes(n.food)?n.food:''}));const ids=new Set(nodes.map(n=>n.id));edges=s.edges.filter(e=>ids.has(e.from)&&ids.has(e.to)&&typeof e.port==='number');nextId=Number(s.nextId)||1;selection=null;pending=null;refresh();return true;}catch(e){return false;}}
+function restore(text){try{const s=JSON.parse(text);if(!Array.isArray(s.nodes)||!Array.isArray(s.edges))return false;nodes=s.nodes.filter(n=>TYPE_NAMES[n.type]&&Number.isFinite(n.x)&&Number.isFinite(n.y)).map(n=>({...n,x:clampWorld(n.x),y:clampWorld(n.y),emoji:n.type==='lamp'&&ANIMAL_EMOJIS.includes(n.emoji)?n.emoji:'',food:n.type==='switch'&&FOOD_EMOJIS.includes(n.food)?n.food:''}));const ids=new Set(nodes.map(n=>n.id));edges=s.edges.filter(e=>ids.has(e.from)&&ids.has(e.to)&&typeof e.port==='number');nextId=Number(s.nextId)||1;selection=null;pending=null;refresh();return true;}catch(e){return false;}}
 function undo(){if(!undoStack.length)return;redoStack.push(snapshot());restore(undoStack.pop());persist();updateHistoryButtons();}
 function redo(){if(!redoStack.length)return;undoStack.push(snapshot());restore(redoStack.pop());persist();updateHistoryButtons();}
 function updateHistoryButtons(){$('undoBtn').disabled=!undoStack.length;$('redoBtn').disabled=!redoStack.length;}
@@ -207,7 +210,7 @@ function notify(msg){clearTimeout(toastTimer);toastEl.textContent=msg;toastEl.cl
 function nextName(type){const n=nodes.filter(x=>x.type===type).length+1;return type==='switch'?String.fromCharCode(65+((n-1)%26)):type==='lamp'?'Lamba '+n:TYPE_NAMES[type]+' '+n;}
 function point(event){let r=viewport.getBoundingClientRect();return{x:(event.clientX-r.left-panX)/zoom,y:(event.clientY-r.top-panY)/zoom};}
 function setView(){board.style.transform=`translate(${panX}px,${panY}px) scale(${zoom})`;$('zoomLabel').textContent=Math.round(zoom*100)+'%';}
-function addNode(type,x,y,{quiet=false}={}){if(!TYPE_NAMES[type])return;remember();const node={id:nextId++,type,x:clamp(x,10,W-NW-10),y:clamp(y,10,H-NH-10),name:nextName(type),value:0,...(type==='lamp'?{emoji:''}:{}),...(type==='switch'?{food:''}:{})};nodes.push(node);pending=null;selection={kind:'node',id:node.id};refresh();persist();if(!quiet)notify(TYPE_NAMES[type]+' eklendi');return node;}
+function addNode(type,x,y,{quiet=false}={}){if(!TYPE_NAMES[type])return;remember();const node={id:nextId++,type,x:clampWorld(x),y:clampWorld(y),name:nextName(type),value:0,...(type==='lamp'?{emoji:''}:{}),...(type==='switch'?{food:''}:{})};nodes.push(node);pending=null;selection={kind:'node',id:node.id};refresh();persist();if(!quiet)notify(TYPE_NAMES[type]+' eklendi');return node;}
 function centerAdd(type){const r=viewport.getBoundingClientRect(),i=nodes.length,col=i%2,row=Math.floor(i/2),gapX=clamp(r.width/zoom*.50,NW+40,280),gapY=135,cx=(r.width*.5-panX)/zoom,cy=(r.height*.42-panY)/zoom;addNode(type,cx+(col?gapX/2:-gapX/2)-NW/2,cy+row*gapY-NH/2);}
 function deleteSelected(){if(!selection){notify('Silmek için önce bir parça veya kablo seç.');return;}remember();if(selection.kind==='node'){const id=selection.id;nodes=nodes.filter(n=>n.id!==id);edges=edges.filter(e=>e.from!==id&&e.to!==id);}else{edges=edges.filter(e=>e.id!==selection.id);}selection=null;pending=null;refresh();persist();notify('Seçim silindi.');}
 function clearBoard(){if(!nodes.length)return;if(!confirm('Tüm parçalar ve kablolar silinsin mi?'))return;remember();nodes=[];edges=[];selection=null;pending=null;refresh();persist();}
@@ -248,7 +251,7 @@ function decorateNode(n){const el=document.createElement('div');el.className='no
  for(let i=0;i<INPUTS[n.type];i++)addPort(el,n,'in',i,computed[n.id]?.inputs?.[i]??null);
  if(n.type!=='lamp')addPort(el,n,'out',0,outputValue(n.id));
  el.addEventListener('pointerdown',e=>{if(e.target.closest('.port'))return;if(e.target.closest('button')&&n.type!=='switch')return;const toggleOnTap=!!e.target.closest('.switch-toggle');e.stopPropagation();e.preventDefault();const startX=e.clientX,startY=e.clientY,oldX=n.x,oldY=n.y;let moved=false;el.setPointerCapture(e.pointerId);
- const move=ev=>{if(ev.pointerId!==e.pointerId)return;const delta=Math.hypot(ev.clientX-startX,ev.clientY-startY);if(!moved&&delta>5){moved=true;remember();}if(!moved)return;n.x=clamp(oldX+(ev.clientX-startX)/zoom,10,W-NW-10);n.y=clamp(oldY+(ev.clientY-startY)/zoom,10,H-NH-10);el.style.left=n.x+'px';el.style.top=n.y+'px';renderWires();};
+ const move=ev=>{if(ev.pointerId!==e.pointerId)return;const delta=Math.hypot(ev.clientX-startX,ev.clientY-startY);if(!moved&&delta>5){moved=true;remember();}if(!moved)return;n.x=clampWorld(oldX+(ev.clientX-startX)/zoom);n.y=clampWorld(oldY+(ev.clientY-startY)/zoom);el.style.left=n.x+'px';el.style.top=n.y+'px';renderWires();};
  const end=ev=>{if(ev.pointerId!==e.pointerId)return;el.removeEventListener('pointermove',move);el.removeEventListener('pointerup',end);el.removeEventListener('pointercancel',end);if(moved){persist();refresh();}else{if(toggleOnTap){remember();n.value=n.value?0:1;persist();}selection={kind:'node',id:n.id};refresh();}};
  el.addEventListener('pointermove',move);el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
  });return el;}

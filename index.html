@@ -79,6 +79,26 @@
 @media(max-width:850px){.header-actions .icon-action{width:34px;height:34px;padding:5px}.board-zoom{right:9px;bottom:9px}.inspector{left:9px;bottom:9px;max-width:calc(100% - 178px);padding:10px}}
 @media(max-width:600px){.header-actions .icon-action{width:36px;height:34px;flex:0 0 36px}.header-actions{justify-content:flex-end}.header-actions #demoBtn{margin-right:auto;flex:1;text-align:center}.board-zoom{right:8px;top:8px;bottom:auto;padding:3px}.board-zoom .action{min-width:30px;height:30px}.inspector{max-width:calc(100% - 16px);width:min(330px,calc(100% - 16px));min-width:0;left:8px;bottom:8px}.emoji-select{min-height:40px}}
 @media(max-width:390px){.header-actions .icon-action{width:31px;flex-basis:31px}.inspector{padding:9px}.emoji-select{min-height:38px}}
+
+/* Compact contextual selection — palette is opened separately in a native modal. */
+.inspector{width:225px;min-width:0;max-width:calc(100% - 24px)}
+.inspector-body{display:none}
+.inspector-actions{display:flex;align-items:stretch;gap:8px;margin-top:10px}
+.inspector-actions .inspector-delete{flex:1;width:auto;margin:0;min-height:46px}
+.inspector-picker{display:grid;place-items:center;flex:none;width:48px;height:46px;border:2px solid #d2e4f0;border-radius:12px;background:#fff3cf;font-family:system-ui,"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-size:27px;line-height:1}
+.inspector-picker:hover{background:#ffe7a3;border-color:#efba47}
+.inspector-picker:focus-visible{outline:3px solid #619ed4;outline-offset:2px}
+.inspector-picker[hidden]{display:none}
+.emoji-modal{width:min(530px,calc(100vw - 24px));max-height:calc(100dvh - 32px);padding:16px;border:1px solid #c9e0ef;border-radius:20px;background:#fff;box-shadow:0 18px 65px #26394c49;color:#2d465b;overflow:hidden}
+.emoji-modal::backdrop{background:rgba(25,39,56,.46);backdrop-filter:blur(3px)}
+.emoji-modal-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.emoji-modal-header strong{font-size:16px;font-weight:850}
+.emoji-modal-close{display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:10px;background:#eff6fa;color:#607789;font-size:26px;line-height:1}
+.emoji-modal-close:hover{background:#deecf5}
+.emoji-modal-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px;max-height:min(430px,calc(100dvh - 128px));overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#b2ccdc transparent;padding:3px}
+.emoji-modal-grid .emoji-tile{min-height:54px;font-size:30px;border-radius:12px;touch-action:manipulation}
+@media(max-width:600px){.inspector{width:215px;left:8px;bottom:8px;max-width:calc(100% - 16px)}.emoji-modal{width:calc(100vw - 18px);padding:12px;border-radius:16px}.emoji-modal-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;max-height:calc(100dvh - 110px)}.emoji-modal-grid .emoji-tile{min-height:48px;font-size:27px}}
+@media(max-width:360px){.emoji-modal-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -113,7 +133,10 @@
         <section class="inspector" id="inspector" aria-label="Seçili parça" hidden>
           <div class="inspector-header"><span class="inspector-type" id="inspectorType" aria-hidden="true"></span><strong class="inspector-name" id="inspectorName"></strong><span class="inspector-state" id="inspectorState" hidden></span><button class="inspector-close" id="inspectorClose" aria-label="Seçimi kapat" title="Kapat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
           <div class="inspector-body" id="inspectorBody"></div>
-          <button class="inspector-delete" id="deleteBtn" title="Seçimi sil"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15M10 10v7m4-7v7"/></svg><span>Sil</span></button>
+          <div class="inspector-actions">
+            <button type="button" class="inspector-picker" id="inspectorPicker" aria-label="Simge seç" title="Simge seç" hidden>💡</button>
+            <button class="inspector-delete" id="deleteBtn" title="Seçimi sil"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15M10 10v7m4-7v7"/></svg><span>Sil</span></button>
+          </div>
         </section>
       </section>
     </main>
@@ -127,6 +150,10 @@
     </aside>
   </div>
 </div>
+<dialog id="emojiModal" class="emoji-modal" aria-modal="true" aria-labelledby="emojiModalTitle">
+  <div class="emoji-modal-header"><strong id="emojiModalTitle">Simge seç</strong><button type="button" id="emojiModalClose" class="emoji-modal-close" title="Kapat" aria-label="Kapat">×</button></div>
+  <div id="emojiModalGrid" class="emoji-modal-grid" role="group" aria-label="Simge seçenekleri"></div>
+</dialog>
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 <script>
 (()=>{'use strict';
@@ -387,30 +414,42 @@ function renderTruth(){
 
 }
 
+function closeEmojiPicker(){const modal=$('emojiModal');if(modal.open)modal.close();}
+function openEmojiPicker(){
+ const n=selection?.kind==='node'?getNode(selection.id):null;
+ if(!n||!['lamp','switch'].includes(n.type))return;
+ const isLamp=n.type==='lamp',field=isLamp?'emoji':'food',groups=isLamp?ANIMAL_GROUPS:FOOD_GROUPS;
+ const current=isLamp?(n.emoji||''):(n.food||'🍎'),options=isLamp?[['💡','Normal lamba','']]:[];
+ for(const group of groups)for(const [emoji,name] of (isLamp?group.animals:group.foods))options.push([emoji,name,emoji]);
+ $('emojiModalTitle').textContent=isLamp?'Hayvan seç':'Yiyecek seç';
+ const grid=$('emojiModalGrid');grid.replaceChildren();
+ grid.setAttribute('aria-label',isLamp?'Hayvan simgeleri':'Yiyecek simgeleri');
+ for(const [emoji,name,value] of options){
+  const tile=document.createElement('button');tile.type='button';tile.className='emoji-tile'+(current===value?' is-selected':'');
+  tile.textContent=emoji;tile.title=name;tile.setAttribute('aria-label',name);tile.setAttribute('aria-pressed',String(current===value));
+  tile.addEventListener('click',()=>{
+   const target=getNode(n.id);
+   if(target&&target.type===n.type&&(target[field]|| (isLamp?'':'🍎'))!==value){remember();target[field]=value;persist();}
+   closeEmojiPicker();refresh();
+  });
+  grid.appendChild(tile);
+ }
+ const modal=$('emojiModal');modal.showModal();
+ const selected=grid.querySelector('.emoji-tile.is-selected')||grid.querySelector('.emoji-tile');
+ if(selected){selected.focus({preventScroll:true});selected.scrollIntoView({block:'nearest'});}
+}
 function renderInspector(){
  const panel=$('inspector'),n=selection?.kind==='node'?getNode(selection.id):null,wire=selection?.kind==='wire'?edges.find(e=>e.id===selection.id):null;
  if(!n&&!wire){panel.hidden=true;return;}
  panel.hidden=false;
- $('inspectorType').textContent=n?(n.type==='lamp'?(n.emoji||'💡'):n.type==='switch'?(n.food||'🍎'):'◇'):'〰';
+ $('inspectorType').textContent=n?(n.type==='lamp'?'💡':n.type==='switch'?'⚡':'◇'):'〰';
  $('inspectorName').textContent=n?n.name:'Kablo';
  const state=$('inspectorState'),value=n?(n.type==='lamp'?computed[n.id]?.lit:outputValue(n.id)):null;
  state.hidden=!(n&&(n.type==='lamp'||n.type==='switch'));state.textContent=value==null?'?':String(value);state.className='inspector-state '+valueClass(value);
- const body=$('inspectorBody');const oldScroll=body.querySelector('.emoji-grid')?.scrollTop??0;body.replaceChildren();
- panel.classList.toggle('with-grid',!!n&&(n.type==='lamp'||n.type==='switch'));
- if(n?.type==='lamp'||n?.type==='switch'){
-  const isLamp=n.type==='lamp',field=isLamp?'emoji':'food';
-  const groups=isLamp?ANIMAL_GROUPS:FOOD_GROUPS;
-  const current=isLamp?(n.emoji||''):(n.food||'🍎');
-  const options=isLamp?[['💡','Normal lamba','']]:[];
-  for(const group of groups)for(const [emoji,name] of (isLamp?group.animals:group.foods))options.push([emoji,name,emoji]);
-  const grid=document.createElement('div');grid.className='emoji-grid';grid.setAttribute('role','group');grid.setAttribute('aria-label',isLamp?'Hayvan seçimi':'Yiyecek seçimi');
-  for(const [emoji,name,value] of options){
-   const tile=document.createElement('button');tile.type='button';tile.className='emoji-tile'+(current===value?' is-selected':'');tile.textContent=emoji;tile.title=name;tile.setAttribute('aria-label',name);tile.setAttribute('aria-pressed',String(current===value));
-   tile.addEventListener('click',()=>{if(current===value)return;remember();n[field]=value;persist();refresh();const selected=$('inspectorBody').querySelector('.emoji-tile.is-selected');selected?.focus({preventScroll:true});});
-   grid.appendChild(tile);
-  }
-  body.appendChild(grid);grid.scrollTop=oldScroll;
- }
+ $('inspectorBody').replaceChildren();
+ const picker=$('inspectorPicker');const isLamp=n?.type==='lamp',isSwitch=n?.type==='switch';
+ picker.hidden=!(isLamp||isSwitch);
+ if(isLamp||isSwitch){picker.textContent=isLamp?(n.emoji||'💡'):(n.food||'🍎');picker.title=isLamp?'Hayvan seç':'Yiyecek seç';picker.setAttribute('aria-label',picker.title);}
 }
 function refresh(){compute();nodesEl.replaceChildren(...nodes.map(decorateNode));renderWires();renderInspector();renderTruth();updateHistoryButtons();}
 function fit(){if(!nodes.length){zoom=1;panX=48;panY=35;setView();return;}const margin=80;const x1=Math.min(...nodes.map(n=>n.x)),x2=Math.max(...nodes.map(n=>n.x+NW)),y1=Math.min(...nodes.map(n=>n.y)),y2=Math.max(...nodes.map(n=>n.y+NH));const r=viewport.getBoundingClientRect();zoom=clamp(Math.min((r.width-margin)/(x2-x1),(r.height-margin)/(y2-y1),1.45),.35,1.7);panX=(r.width-(x2-x1)*zoom)/2-x1*zoom;panY=(r.height-(y2-y1)*zoom)/2-y1*zoom;setView();}
@@ -431,8 +470,12 @@ viewport.addEventListener('pointerup',endPan);viewport.addEventListener('pointer
 viewport.addEventListener('wheel',e=>{if(e.ctrlKey||e.metaKey){e.preventDefault();const r=viewport.getBoundingClientRect(),cx=e.clientX-r.left,cy=e.clientY-r.top,worldX=(cx-panX)/zoom,worldY=(cy-panY)/zoom;zoom=clamp(zoom*Math.exp(-e.deltaY*.003),.35,2);panX=cx-worldX*zoom;panY=cy-worldY*zoom;setView();}else if(Math.abs(e.deltaX)+Math.abs(e.deltaY)>0){e.preventDefault();panX-=e.deltaX;panY-=e.deltaY;setView();}},{passive:false});
 for(const id of ['inspector','zoomOut','zoomIn','fitBtn'])$(id).addEventListener('pointerdown',e=>e.stopPropagation());
 $('inspectorClose').addEventListener('click',()=>{selection=null;refresh();});
+ $('inspectorPicker').addEventListener('click',openEmojiPicker);
+ $('emojiModalClose').addEventListener('click',closeEmojiPicker);
+ $('emojiModal').addEventListener('click',e=>{const modal=$('emojiModal'),r=modal.getBoundingClientRect();if(e.target===modal&&(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom))closeEmojiPicker();});
+ $('emojiModal').addEventListener('close',()=>{const picker=$('inspectorPicker');if(!picker.hidden)picker.focus({preventScroll:true});});
 $('truthToggle').addEventListener('click',()=>{const layout=document.querySelector('.workspace-layout');const open=layout.classList.toggle('table-open');$('truthToggle').setAttribute('aria-expanded',String(open));$('truthContent').hidden=!open;});$('demoBtn').addEventListener('click',demo);$('deleteBtn').addEventListener('click',deleteSelected);$('newBtn').addEventListener('click',clearBoard);$('undoBtn').addEventListener('click',undo);$('redoBtn').addEventListener('click',redo);$('zoomIn').addEventListener('click',()=>changeZoom(1.18));$('zoomOut').addEventListener('click',()=>changeZoom(1/1.18));$('fitBtn').addEventListener('click',fit);
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){pending=null;selection=null;refresh();}if(['Delete','Backspace'].includes(e.key)&&!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){e.preventDefault();if(selection)deleteSelected();}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();redo();}});
+document.addEventListener('keydown',e=>{if($('emojiModal').open){return;}if(e.key==='Escape'){pending=null;selection=null;refresh();}if(['Delete','Backspace'].includes(e.key)&&!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){e.preventDefault();if(selection)deleteSelected();}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();redo();}});
 window.addEventListener('resize',()=>{if(!nodes.length){setView();}});
 // Recover progress locally if available. The file needs no server and no dependencies.
 let saved=null;try{saved=localStorage.getItem(STORAGE_KEY);}catch(e){}

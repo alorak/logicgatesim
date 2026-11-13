@@ -26,6 +26,49 @@
 @media(max-width:1100px){.workspace-layout,.workspace-layout.table-open{grid-template-columns:150px minmax(0,1fr);position:relative}.truth-panel{position:absolute;right:0;top:0;bottom:0;width:48px;box-shadow:-2px 0 10px #607b9210}.table-open .truth-panel{width:min(310px,calc(100% - 150px));box-shadow:-8px 0 22px #4b69802a}.main{padding-right:54px}.table-open .main{padding-right:54px}}
 @media(max-width:600px){.workspace-layout,.workspace-layout.table-open{grid-template-columns:minmax(0,1fr)}.sidebar{display:grid;grid-template-columns:repeat(6,minmax(58px,1fr));grid-auto-flow:column;overflow-x:auto;overflow-y:hidden;border-right:0;border-bottom:1px solid #e5eef4;gap:5px;padding:7px 9px}.sidebar h2{display:none}.workspace-layout{grid-template-rows:auto minmax(0,1fr)}.tool{min-height:56px;flex-direction:column;justify-content:center;gap:2px;font-size:9px;padding:5px 3px}.tool-icon{height:27px}.tool-icon svg{height:29px}.tiny-switch{width:24px;height:24px}.tiny-lamp{width:21px;height:21px}.main{min-height:0;padding:7px 55px 7px 7px}.truth-panel{top:0;bottom:0}.table-open .truth-panel{width:min(310px,calc(100% - 15px))}.brand h1{font-size:14px}.header-actions .action{font-size:10px;padding:7px 6px}.header{flex-wrap:wrap;gap:5px}.board-top{min-height:27px}.board-meta{font-size:10px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
+
+/* Compact header actions and board-local controls */
+.header-actions .icon-action{display:grid;place-items:center;width:38px;height:38px;padding:7px;flex:none}
+.icon-action svg,.zoom-fit svg,.inspector-close svg,.inspector-delete svg,.truth-stat svg{display:block;width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+.main{position:relative;gap:0}
+.board-viewport{min-height:0}
+.board-zoom{position:absolute;right:14px;bottom:14px;z-index:10;display:flex;align-items:center;gap:3px;padding:5px;background:#ffffffeb;border:1px solid #d4e5f0;box-shadow:0 3px 14px #42607d1d;border-radius:13px;touch-action:manipulation;cursor:default}
+.board-zoom .action{padding:5px;min-width:32px;height:32px;display:grid;place-items:center;border:0;background:transparent;border-radius:9px}
+.board-zoom .action:hover{background:#eaf5fc}
+.board-zoom .zoom-text{font-size:11px;min-width:40px}
+.board-zoom .zoom-fit svg{width:19px;height:19px}
+/* Contextual controls: reveal only when the user selects a component or wire. */
+.inspector{position:absolute;left:14px;bottom:14px;z-index:11;width:max-content;max-width:min(425px,calc(100% - 185px));min-width:185px;padding:12px;background:#fffffffa;border:1px solid #c7dce9;box-shadow:0 7px 25px #35556c24;border-radius:15px;touch-action:manipulation;cursor:default}
+.inspector[hidden]{display:none}
+.inspector-header{display:flex;align-items:center;gap:9px;min-height:34px}
+.inspector-type{min-width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#fff1c9;font-size:18px}
+.inspector-name{min-width:0;flex:1;font-size:13px;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#304457}
+.inspector-state{font-size:12px;font-weight:900;color:#91661a;background:#fff0c7;min-width:26px;height:26px;display:grid;place-items:center;border-radius:50%}
+.inspector-state.off{background:#eaf2f7;color:#597080}
+.inspector-state.unknown{background:#f5f7f8;color:#8fa1ad}
+.inspector-close{display:grid;place-items:center;width:29px;height:29px;padding:5px;border:0;background:transparent;color:#6d8090;border-radius:8px}
+.inspector-close:hover{background:#ecf4f8}
+.inspector-body{display:flex;flex-direction:column;gap:9px;margin-top:10px}
+.inspector-body:empty{display:none}
+.inspector-emoji-label{font-size:11px;letter-spacing:.3px;font-weight:850;color:#5f7689}
+.emoji-grid{display:flex;gap:5px;flex-wrap:wrap;max-height:126px;overflow-y:auto}
+.emoji-option{width:37px;height:37px;display:grid;place-items:center;padding:0;border:1px solid #d7e5ed;border-radius:10px;background:#f5faff;font-size:24px;line-height:1;touch-action:manipulation}
+.emoji-option:hover,.emoji-option[aria-pressed=true]{background:#fff2ce;border-color:#e6b94f}
+.emoji-option[aria-pressed=true]{box-shadow:inset 0 0 0 1px #e6b94f}
+.inspector-delete{margin-top:10px;width:100%;display:flex;align-items:center;justify-content:center;gap:7px;background:#fff2f2;border:1px solid #eccaca;border-radius:10px;padding:9px 12px;color:#b14444;font-size:12px;font-weight:800}
+.inspector-delete:hover{background:#ffe4e4}
+.lamp-body.has-emoji{font-size:27px;line-height:1;position:relative;isolation:isolate;overflow:visible}
+.lamp-body.has-emoji.off .lamp-face{filter:grayscale(1);opacity:.43}
+.lamp-body.has-emoji.unknown .lamp-face{filter:grayscale(.9);opacity:.35}
+.lamp-face{font-family:system-ui,"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+.lamp-bit{position:absolute;right:-13px;bottom:-8px;display:grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1px solid #b8c6d0;background:#fff;color:#4a6478;font-size:10px;font-weight:900;box-shadow:0 2px 3px #94a6b32f}
+.lamp-body.on .lamp-bit{background:#ffcf60;border-color:#bd8a18;color:#4f3c1c}
+.truth-stat{display:flex;flex-direction:column;align-items:center;gap:4px}
+.truth-stat .stat-symbol{display:grid;place-items:center;height:20px;color:#607c92}
+.truth-stat svg{width:19px;height:19px}
+@media(max-width:850px){.header-actions .icon-action{width:34px;height:34px;padding:5px}.board-zoom{right:9px;bottom:9px}.inspector{left:9px;bottom:9px;max-width:calc(100% - 178px);padding:10px}}
+@media(max-width:600px){.header-actions .icon-action{width:36px;height:34px;flex:0 0 36px}.header-actions{justify-content:flex-end}.header-actions #demoBtn{margin-right:auto;flex:1;text-align:center}.board-zoom{right:8px;top:8px;bottom:auto;padding:3px}.board-zoom .action{min-width:30px;height:30px}.inspector{max-width:calc(100% - 16px);width:min(330px,calc(100% - 16px));min-width:0;left:8px;bottom:8px}.emoji-option{width:34px;height:34px;font-size:22px}}
+@media(max-width:390px){.header-actions .icon-action{width:31px;flex-basis:31px}.inspector{padding:9px}.emoji-grid{max-height:96px}}
 </style>
 </head>
 <body>
@@ -34,10 +77,9 @@
     <div class="brand"><div class="brand-icon" aria-hidden="true">∧</div><div><h1>Mantık Laboratuvarı</h1></div></div>
     <div class="header-actions">
       <button id="demoBtn" class="action primary" title="Örnek yarım toplayıcı devresi kur">◈ Örnek devre</button>
-      <button id="undoBtn" class="action" title="Geri al (Ctrl+Z)">↶ Geri</button>
-      <button id="redoBtn" class="action" title="İleri al (Ctrl+Y)">↷ İleri</button>
-      <button id="deleteBtn" class="action danger" title="Seçili parçayı veya kabloyu sil (Delete)">✕ Sil</button>
-      <button id="newBtn" class="action" title="Çalışma alanını temizle">↺ Temizle</button>
+      <button id="undoBtn" class="action icon-action" aria-label="Geri al" title="Geri al (Ctrl+Z)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-2"/></svg></button>
+      <button id="redoBtn" class="action icon-action" aria-label="İleri al" title="İleri al (Ctrl+Y)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h2"/></svg></button>
+      <button id="newBtn" class="action icon-action" aria-label="Temizle" title="Çalışma alanını temizle"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.6 7"/><path d="M3 4v7h7"/></svg></button>
     </div>
   </header>
   <div class="workspace-layout">
@@ -51,9 +93,17 @@
       <button class="tool" data-type="xor" title="Sürükle veya dokunarak ekle"><span class="tool-icon"><svg viewBox="0 0 85 62"><path d="M13 9Q30 31 13 53M18 9Q35 31 18 53Q48 53 68 31Q48 9 18 9Z" fill="#fff" stroke="#4f4144" stroke-width="3"/><path d="M0 21H24M0 42H24M68 31H83" stroke="#4f4144" stroke-width="3"/></svg></span><span>XOR</span></button>
     </aside>
     <main class="main">
-      <div class="board-top"><div class="board-meta" id="boardMeta">Boş çalışma alanı</div><div class="board-actions"><button class="action small" id="zoomOut" aria-label="Uzaklaştır" title="Uzaklaştır">−</button><span class="zoom-text" id="zoomLabel">100%</span><button class="action small" id="zoomIn" aria-label="Yakınlaştır" title="Yakınlaştır">+</button><button class="action" id="fitBtn" title="Devreyi ekrana sığdır">Sığdır</button></div></div>
       <section class="board-viewport" id="viewport" aria-label="Mantık devresi çalışma alanı" tabindex="0">
         <div class="board" id="board"><svg class="wires" id="wires" viewBox="0 0 2100 1600" aria-label="Bağlantı kabloları"></svg><div id="nodes"></div></div>
+        <div class="board-zoom" aria-label="Görünüm kontrolleri">
+          <button class="action" id="zoomOut" aria-label="Uzaklaştır" title="Uzaklaştır">−</button><span class="zoom-text" id="zoomLabel">100%</span><button class="action" id="zoomIn" aria-label="Yakınlaştır" title="Yakınlaştır">+</button>
+          <button class="action zoom-fit" id="fitBtn" aria-label="Ekrana sığdır" title="Ekrana sığdır"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5"/></svg></button>
+        </div>
+        <section class="inspector" id="inspector" aria-label="Seçili parça" hidden>
+          <div class="inspector-header"><span class="inspector-type" id="inspectorType" aria-hidden="true"></span><strong class="inspector-name" id="inspectorName"></strong><span class="inspector-state" id="inspectorState" hidden></span><button class="inspector-close" id="inspectorClose" aria-label="Seçimi kapat" title="Kapat"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+          <div class="inspector-body" id="inspectorBody"></div>
+          <button class="inspector-delete" id="deleteBtn" title="Seçimi sil"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 15h10l1-15M10 10v7m4-7v7"/></svg><span>Sil</span></button>
+        </section>
       </section>
     </main>
     <aside id="truthPanel" class="truth-panel" aria-label="Doğruluk tablosu">
@@ -74,6 +124,7 @@
 const W=2100,H=1600,NW=146,NH=95, STORAGE_KEY='mantik-laboratuvari-v1';
 const TYPE_NAMES={switch:'Anahtar',lamp:'Lamba',and:'AND',or:'OR',not:'NOT',xor:'XOR'};
 const INPUTS={switch:0,lamp:1,and:2,or:2,not:1,xor:2};
+const ANIMAL_EMOJIS=['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐸','🐵','🐷','🐮','🐥','🐧','🦄','🐢','🐙'];
 const $=id=>document.getElementById(id);
 const viewport=$('viewport'),board=$('board'),nodesEl=$('nodes'),wiresEl=$('wires'),toastEl=$('toast');
 let nodes=[],edges=[],nextId=1,selection=null,pending=null,draggingWire=null,panX=60,panY=45,zoom=1,undoStack=[],redoStack=[];
@@ -83,7 +134,7 @@ function clamp(x,a,b){return Math.max(a,Math.min(b,x));}
 function snapshot(){return JSON.stringify({nodes,edges,nextId});}
 function persist(){try{localStorage.setItem(STORAGE_KEY,snapshot());}catch(e){}}
 function remember(){undoStack.push(snapshot());if(undoStack.length>50)undoStack.shift();redoStack=[];updateHistoryButtons();}
-function restore(text){try{const s=JSON.parse(text);if(!Array.isArray(s.nodes)||!Array.isArray(s.edges))return false;nodes=s.nodes.filter(n=>TYPE_NAMES[n.type]&&Number.isFinite(n.x)&&Number.isFinite(n.y)).map(n=>({...n,x:clamp(n.x,10,W-NW-10),y:clamp(n.y,10,H-NH-10)}));const ids=new Set(nodes.map(n=>n.id));edges=s.edges.filter(e=>ids.has(e.from)&&ids.has(e.to)&&typeof e.port==='number');nextId=Number(s.nextId)||1;selection=null;pending=null;refresh();return true;}catch(e){return false;}}
+function restore(text){try{const s=JSON.parse(text);if(!Array.isArray(s.nodes)||!Array.isArray(s.edges))return false;nodes=s.nodes.filter(n=>TYPE_NAMES[n.type]&&Number.isFinite(n.x)&&Number.isFinite(n.y)).map(n=>({...n,x:clamp(n.x,10,W-NW-10),y:clamp(n.y,10,H-NH-10),emoji:n.type==='lamp'&&ANIMAL_EMOJIS.includes(n.emoji)?n.emoji:''}));const ids=new Set(nodes.map(n=>n.id));edges=s.edges.filter(e=>ids.has(e.from)&&ids.has(e.to)&&typeof e.port==='number');nextId=Number(s.nextId)||1;selection=null;pending=null;refresh();return true;}catch(e){return false;}}
 function undo(){if(!undoStack.length)return;redoStack.push(snapshot());restore(undoStack.pop());persist();updateHistoryButtons();}
 function redo(){if(!redoStack.length)return;undoStack.push(snapshot());restore(redoStack.pop());persist();updateHistoryButtons();}
 function updateHistoryButtons(){$('undoBtn').disabled=!undoStack.length;$('redoBtn').disabled=!redoStack.length;}
@@ -91,7 +142,7 @@ function notify(msg){clearTimeout(toastTimer);toastEl.textContent=msg;toastEl.cl
 function nextName(type){const n=nodes.filter(x=>x.type===type).length+1;return type==='switch'?String.fromCharCode(65+((n-1)%26)):type==='lamp'?'Lamba '+n:TYPE_NAMES[type]+' '+n;}
 function point(event){let r=viewport.getBoundingClientRect();return{x:(event.clientX-r.left-panX)/zoom,y:(event.clientY-r.top-panY)/zoom};}
 function setView(){board.style.transform=`translate(${panX}px,${panY}px) scale(${zoom})`;$('zoomLabel').textContent=Math.round(zoom*100)+'%';}
-function addNode(type,x,y,{quiet=false}={}){if(!TYPE_NAMES[type])return;remember();const node={id:nextId++,type,x:clamp(x,10,W-NW-10),y:clamp(y,10,H-NH-10),name:nextName(type),value:0};nodes.push(node);pending=null;selection={kind:'node',id:node.id};refresh();persist();if(!quiet)notify(TYPE_NAMES[type]+' eklendi');return node;}
+function addNode(type,x,y,{quiet=false}={}){if(!TYPE_NAMES[type])return;remember();const node={id:nextId++,type,x:clamp(x,10,W-NW-10),y:clamp(y,10,H-NH-10),name:nextName(type),value:0,...(type==='lamp'?{emoji:''}:{})};nodes.push(node);pending=null;selection={kind:'node',id:node.id};refresh();persist();if(!quiet)notify(TYPE_NAMES[type]+' eklendi');return node;}
 function centerAdd(type){const r=viewport.getBoundingClientRect(),i=nodes.length,col=i%2,row=Math.floor(i/2),gapX=clamp(r.width/zoom*.50,NW+40,280),gapY=135,cx=(r.width*.5-panX)/zoom,cy=(r.height*.42-panY)/zoom;addNode(type,cx+(col?gapX/2:-gapX/2)-NW/2,cy+row*gapY-NH/2);}
 function deleteSelected(){if(!selection){notify('Silmek için önce bir parça veya kablo seç.');return;}remember();if(selection.kind==='node'){const id=selection.id;nodes=nodes.filter(n=>n.id!==id);edges=edges.filter(e=>e.from!==id&&e.to!==id);}else{edges=edges.filter(e=>e.id!==selection.id);}selection=null;pending=null;refresh();persist();notify('Seçim silindi.');}
 function clearBoard(){if(!nodes.length)return;if(!confirm('Tüm parçalar ve kablolar silinsin mi?'))return;remember();nodes=[];edges=[];selection=null;pending=null;refresh();persist();}
@@ -122,7 +173,10 @@ function renderWires(){wiresEl.replaceChildren();for(const edge of edges){const 
 function decorateNode(n){const el=document.createElement('div');el.className='node'+(selection?.kind==='node'&&selection.id===n.id?' selected':'');el.dataset.id=n.id;el.style.left=n.x+'px';el.style.top=n.y+'px';
  const title=document.createElement('span');title.className='node-name';title.textContent=n.name;el.appendChild(title);
  const shape=document.createElement('div');shape.className='node-shape';if(n.type==='switch'){const b=document.createElement('button');b.className='switch-toggle'+(n.value?' active':'');b.textContent=n.value?'1':'0';b.setAttribute('aria-label',`${n.name}: ${n.value?'açık':'kapalı'}, değiştirmek için dokun`);b.addEventListener('click',e=>{if(e.detail!==0)return;e.stopPropagation();remember();n.value=n.value?0:1;selection={kind:'node',id:n.id};refresh();persist();});shape.appendChild(b);}
- else if(n.type==='lamp'){let v=computed[n.id]?.lit??null;const bulb=document.createElement('div');bulb.className='lamp-body '+valueClass(v);bulb.textContent=v===null?'?':String(v);bulb.setAttribute('aria-label',`Lamba ${v===1?'yanıyor':v===0?'sönük':'bağlı değil'}`);shape.appendChild(bulb);}
+ else if(n.type==='lamp'){let v=computed[n.id]?.lit??null;const bulb=document.createElement('div');bulb.className='lamp-body '+valueClass(v)+(n.emoji?' has-emoji':'');
+  if(n.emoji){const face=document.createElement('span');face.className='lamp-face';face.textContent=n.emoji;const bit=document.createElement('span');bit.className='lamp-bit';bit.textContent=v===null?'?':String(v);bulb.append(face,bit);}
+  else bulb.textContent=v===null?'?':String(v);
+  bulb.setAttribute('aria-label',`Lamba ${v===1?'yanıyor':v===0?'sönük':'bağlı değil'}`);shape.appendChild(bulb);}
  else{shape.innerHTML=gateSvg(n.type);const v=outputValue(n.id);const state=document.createElement('span');state.className='gate-value '+valueClass(v);state.textContent=v===null?'?':String(v);shape.appendChild(state);}el.appendChild(shape);
  const typeEl=document.createElement('span');typeEl.className='node-type';typeEl.textContent=n.type==='switch'?'ANAHTAR':n.type==='lamp'?'LAMBA':n.type.toUpperCase();el.appendChild(typeEl);
  for(let i=0;i<INPUTS[n.type];i++)addPort(el,n,'in',i,computed[n.id]?.inputs?.[i]??null);
@@ -202,10 +256,31 @@ function renderTruth(){
  for(const n of lamps){const formula=document.createElement('div');formula.className='truth-formula';const label=document.createElement('strong');label.textContent=n.name+' = ';formula.appendChild(label);formula.append(document.createTextNode(lampExpression(n)));formulas.appendChild(formula);}
  const stats=$('truthStats');stats.replaceChildren();
  for(const [v,label] of [[nodes.filter(n=>['and','or','not','xor'].includes(n.type)).length,'Kapı'],[edges.length,'Kablo'],[switches.length>6?'—':rows,'Satır']]){
-  const box=document.createElement('div'),count=document.createElement('b'),caption=document.createElement('small');box.className='truth-stat';count.textContent=v;caption.textContent=label;box.append(count,caption);stats.appendChild(box);
+  const box=document.createElement('div'),count=document.createElement('b'),symbol=document.createElement('span');box.className='truth-stat';box.title=label;box.setAttribute('aria-label',`${v} ${label}`);count.textContent=v;symbol.className='stat-symbol';symbol.setAttribute('aria-hidden','true');
+  const svg=svgEl('svg',{viewBox:'0 0 24 24',fill:'none',stroke:'currentColor','stroke-width':2,'stroke-linecap':'round','stroke-linejoin':'round'});
+  const paths={Kapı:['M3 5h6c6 0 10 3 10 7s-4 7-10 7H3Z','M1 9h3M1 15h3M19 12h4'],Kablo:['M4 5a2 2 0 1 0 0 4a2 2 0 0 0 0-4','M20 15a2 2 0 1 0 0 4a2 2 0 0 0 0-4','M6 7c13-1 0 10 12 10'],Satır:['M4 5h16v14H4z','M4 10h16M4 15h16M10 5v14']};
+  for(const d of paths[label])svg.appendChild(svgEl('path',{d}));symbol.appendChild(svg);box.append(count,symbol);stats.appendChild(box);
  }
 }
-function refresh(){compute();nodesEl.replaceChildren(...nodes.map(decorateNode));renderWires();const meta=nodes.length+' parça · '+edges.length+' kablo';$('boardMeta').textContent=meta;$('deleteBtn').disabled=!selection;renderTruth();updateHistoryButtons();}
+function renderInspector(){
+ const panel=$('inspector'),n=selection?.kind==='node'?getNode(selection.id):null,wire=selection?.kind==='wire'?edges.find(e=>e.id===selection.id):null;
+ if(!n&&!wire){panel.hidden=true;return;}
+ panel.hidden=false;
+ $('inspectorType').textContent=n?(n.type==='lamp'?(n.emoji||'💡'):n.type==='switch'?'⚡':'◇'):'〰';
+ $('inspectorName').textContent=n?n.name:'Kablo';
+ const state=$('inspectorState'),value=n?(n.type==='lamp'?computed[n.id]?.lit:outputValue(n.id)):null;
+ state.hidden=!(n&&(n.type==='lamp'||n.type==='switch'));state.textContent=value==null?'?':String(value);state.className='inspector-state '+valueClass(value);
+ const body=$('inspectorBody');body.replaceChildren();
+ if(n?.type==='lamp'){
+  const label=document.createElement('div');label.className='inspector-emoji-label';label.textContent='Lamba yüzü';body.appendChild(label);
+  const grid=document.createElement('div');grid.className='emoji-grid';grid.setAttribute('role','group');grid.setAttribute('aria-label','Lamba için hayvan emojisi seç');
+  for(const emoji of ['',...ANIMAL_EMOJIS]){
+   const option=document.createElement('button');option.type='button';option.className='emoji-option';option.textContent=emoji||'💡';option.title=emoji||'Normal lamba';option.setAttribute('aria-label',emoji?'Hayvan simgesi '+emoji:'Normal lamba');option.setAttribute('aria-pressed',String((n.emoji||'')===emoji));
+   option.addEventListener('click',()=>{if((n.emoji||'')===emoji)return;remember();n.emoji=emoji;persist();refresh();});grid.appendChild(option);
+  }body.appendChild(grid);
+ }
+}
+function refresh(){compute();nodesEl.replaceChildren(...nodes.map(decorateNode));renderWires();renderInspector();renderTruth();updateHistoryButtons();}
 function fit(){if(!nodes.length){zoom=1;panX=48;panY=35;setView();return;}const margin=80;const x1=Math.min(...nodes.map(n=>n.x)),x2=Math.max(...nodes.map(n=>n.x+NW)),y1=Math.min(...nodes.map(n=>n.y)),y2=Math.max(...nodes.map(n=>n.y+NH));const r=viewport.getBoundingClientRect();zoom=clamp(Math.min((r.width-margin)/(x2-x1),(r.height-margin)/(y2-y1),1.45),.35,1.7);panX=(r.width-(x2-x1)*zoom)/2-x1*zoom;panY=(r.height-(y2-y1)*zoom)/2-y1*zoom;setView();}
 function changeZoom(factor){const r=viewport.getBoundingClientRect();const cx=r.width/2,cy=r.height/2,worldX=(cx-panX)/zoom,worldY=(cy-panY)/zoom;zoom=clamp(zoom*factor,.35,2);panX=cx-worldX*zoom;panY=cy-worldY*zoom;setView();}
 function demo(){if(nodes.length&&!confirm('Örnek devre mevcut çalışmanın yerine kurulsun mu?'))return;remember();nodes=[{id:1,type:'switch',x:150,y:220,name:'A',value:0},{id:2,type:'switch',x:150,y:400,name:'B',value:0},{id:3,type:'xor',x:495,y:212,name:'XOR',value:0},{id:4,type:'and',x:495,y:394,name:'AND',value:0},{id:5,type:'lamp',x:840,y:212,name:'Toplam',value:0},{id:6,type:'lamp',x:840,y:394,name:'Elde',value:0}];edges=[{id:7,from:1,to:3,port:0},{id:8,from:2,to:3,port:1},{id:9,from:1,to:4,port:0},{id:10,from:2,to:4,port:1},{id:11,from:3,to:5,port:0},{id:12,from:4,to:6,port:0}];nextId=13;pending=null;selection=null;refresh();fit();persist();notify('Yarım toplayıcı kuruldu. A ve B anahtarlarına dokun.');}
@@ -222,6 +297,8 @@ viewport.addEventListener('pointermove',e=>{if(!touches.has(e.pointerId))return;
 const endPan=e=>{touches.delete(e.pointerId);if(touches.size<2)pinch=null;if(interaction?.id===e.pointerId){if(!interaction.moved){selection=null;refresh();}interaction=null;}viewport.classList.remove('panning');};
 viewport.addEventListener('pointerup',endPan);viewport.addEventListener('pointercancel',endPan);
 viewport.addEventListener('wheel',e=>{if(e.ctrlKey||e.metaKey){e.preventDefault();const r=viewport.getBoundingClientRect(),cx=e.clientX-r.left,cy=e.clientY-r.top,worldX=(cx-panX)/zoom,worldY=(cy-panY)/zoom;zoom=clamp(zoom*Math.exp(-e.deltaY*.003),.35,2);panX=cx-worldX*zoom;panY=cy-worldY*zoom;setView();}else if(Math.abs(e.deltaX)+Math.abs(e.deltaY)>0){e.preventDefault();panX-=e.deltaX;panY-=e.deltaY;setView();}},{passive:false});
+for(const id of ['inspector','zoomOut','zoomIn','fitBtn'])$(id).addEventListener('pointerdown',e=>e.stopPropagation());
+$('inspectorClose').addEventListener('click',()=>{selection=null;refresh();});
 $('truthToggle').addEventListener('click',()=>{const layout=document.querySelector('.workspace-layout');const open=layout.classList.toggle('table-open');$('truthToggle').setAttribute('aria-expanded',String(open));$('truthContent').hidden=!open;});$('demoBtn').addEventListener('click',demo);$('deleteBtn').addEventListener('click',deleteSelected);$('newBtn').addEventListener('click',clearBoard);$('undoBtn').addEventListener('click',undo);$('redoBtn').addEventListener('click',redo);$('zoomIn').addEventListener('click',()=>changeZoom(1.18));$('zoomOut').addEventListener('click',()=>changeZoom(1/1.18));$('fitBtn').addEventListener('click',fit);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){pending=null;selection=null;refresh();}if(['Delete','Backspace'].includes(e.key)&&!['INPUT','TEXTAREA'].includes(document.activeElement.tagName)){e.preventDefault();if(selection)deleteSelected();}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo();}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='y'){e.preventDefault();redo();}});
 window.addEventListener('resize',()=>{if(!nodes.length){setView();}});
